@@ -1,6 +1,24 @@
 from minmax import minandmax
 import unittest
 
+class Box:
+    """Wraps a value and tracks identity for equality testing."""
+    def __init__(self, value, label):
+        self.value = value
+        self.label = label  # Unique identifier to distinguish objects with same value
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __gt__(self, other):
+        return self.value > other.value
+
+    def __eq__(self, other):
+        return self.value == other.value and self.label == other.label
+
+    def __repr__(self):
+        return f"Box({self.value}, '{self.label}')"
+
 class TestMinAndMax(unittest.TestCase):
     def test_single_element(self):
         self.assertEqual(minandmax([42]), (42, 42))
@@ -26,10 +44,21 @@ class TestMinAndMax(unittest.TestCase):
     def test_large_range(self):
         self.assertEqual(minandmax(list(range(-1000, 1000))), (-1000, 999))
 
-    def FAILS_test_empty_list(self):
-        # According to the specification, this should return (None, None)
-        # But the implementation raises IndexError on values[0]
+    def test_min_max_duplicates(self):
+        self.assertEqual(minandmax([3, 1, 4, 1, 5, 9, 1, 9]), (1, 9))
+
+    def test_empty_list(self):
         self.assertEqual(minandmax([]), (None, None))
+
+    def test_custom_objects_first_occurrence(self):
+        a = Box(5, 'a')  # Should be max
+        b = Box(1, 'b')  # Should be min
+        c = Box(5, 'c')  # Same value as max
+        d = Box(1, 'd')  # Same value as min
+        e = Box(3, 'e')
+
+        result = minandmax([a, b, c, d, e])
+        self.assertEqual(result, (b, a))  # First 1 and first 5
 
 if __name__ == '__main__':
     unittest.main()
