@@ -1,0 +1,3 @@
+This is a place to play with the idea of Documentation Driven Development.
+
+What that is, is for me to know and you to find out if it turns out to be an interesting idea...
